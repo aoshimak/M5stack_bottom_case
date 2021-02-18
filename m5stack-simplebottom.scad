@@ -1,21 +1,19 @@
-// -------------------------------------------------
-// Settings
-// -------------------------------------------------
-
-$fn = 50;
 
 // -------------------------------------------------
 // Configuration
 // -------------------------------------------------
 
-wall_height = 10;  // need over screwbase_height
-
-base_height = 3;   // thick of the base plate
+// thick of the base plate
+base_height = 3;   
 
 // screw base height (over the base plate)
-screwbase_height = 3.5 + base_height;
+screwbase_height = 3.5 ;
 
-// -------------------------------------------------
+// wall_height need to set over screwbase_height
+wall_height = 10; 
+
+// height for the middle case
+middle_height = 12.5;
 
 // -------------------------------------------------
 // Definition
@@ -32,6 +30,12 @@ hole_height = 5.0;
 
 inner_size = outer_size - 2 * wall_width;
 inner_corner_diameter = outer_corner - wall_width;
+
+// -------------------------------------------------
+// Settings
+// -------------------------------------------------
+
+$fn = 50;
 
 // -------------------------------------------------
 // Modules
@@ -68,6 +72,8 @@ module tabs() {
     corner = outer_corner + (tab_width - wall_width);
     difference() {
         wall(outer, tab_width, corner);
+		
+		// cut tabs with square
         square([32,outer_size], true);
         square([outer_size,39], true);
     }
@@ -81,15 +87,16 @@ module screw() {
         //screw core hole for M3, h=total height of body
         cylinder(r=3.2/2, h=base_height + wall_height);
         
-        // to connect between the outer path and hole
-        // for FDM printers
+        // very little bar sank into the base,
+		// to connect between the outer path and  outline of hole (for FDM printers)
         translate([0,-0.1,0])
         cube ([10,0.2,0.4], center=false);        
     }
 }
 
 // multiply 4 screw holes
-// rotate 45 and 135 degree for outer path
+// rotate 45 and 135 degree for outline connection
+
 module screw_unit(){
     union() {
         translate([22,22])
@@ -111,7 +118,7 @@ module screw_unit(){
 }
 
 // overhang support for screw hole
-// 6 small cones set unto the screw box
+// 6 small cones set into the screw box after build up body.
 module scsupport() {
     union(){
         for ( i = [0:60:300]) 
@@ -131,11 +138,9 @@ module scsupport_unit(){
     }
 }
 
-
-
-// make screw base inside case. 8mm cylinder
+// make screw base inside case. 
 module scbase(){
-    cylinder(r=4, h=screwbase_height);
+    cylinder(r=4, h=screwbase_height + base_height);
 }
 
 // mlutiply screw base
@@ -150,15 +155,13 @@ module scbase_unit(){
 
 // building base plate
 module baseplate() {
-
     minkowski() {
         square(outer_size - 2 * outer_corner, true);
         circle(outer_corner);
     }
-
 }
 
-// inner screw pole for circuit plate
+// inside screw pole for circuit plate
 module hole() {
     translate([18,22]) {
         difference() {
@@ -229,9 +232,6 @@ module bottom_layer() {
 // build up middle layer case
 module middle_layer() {
 
-    // height for the middle case
-    middle_height = 12.5;
-
     // diff (middle layer case) - (lower tabs for connect)
     difference() {
         
@@ -261,7 +261,7 @@ module middle_layer() {
 }
 
 // -------------------------------------------------
-// Entry points
+// Build up
 // -------------------------------------------------
 
 bottom_layer();
