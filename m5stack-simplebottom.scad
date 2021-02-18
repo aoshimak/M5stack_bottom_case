@@ -7,14 +7,15 @@
 // -------------------------------------------------
 
 // switch the pattern what you make:
-// bottom case = 1, middle case = 2
-pattern = 1;
+// bottom case = 1, bottom case without inside screw hole = 2
+// middle case = 3
+pattern = 2;
 
 // thick of the base plate (mm)
 base_height = 3;   
 
 // screw base height (over the base plate) (mm)
-screwbase_height = 3.5 ;
+screwbase_height = 3 ;
 
 // wall_height (mm): need to set over screwbase_height
 wall_height = 10; 
@@ -205,8 +206,8 @@ module bottom_layer() {
     // diff (whole body) - (outer screw)
     difference() {
 
-        // unite baseplate + wall + screw pole 
-        // + tab + screw base
+        // unite whole body:
+        // baseplate + wall + screw pole + tab + screw base
         union() {
             
             // render base plate
@@ -220,10 +221,10 @@ module bottom_layer() {
                 // render wall itself
                   linear_extrude(wall_height) walls();
                                 
-                // render screw pole
-                //translate([0,0,wall_height-hole_height]) {
-                //    linear_extrude(hole_height) holes();
-                //}
+                // render inner screw pole
+                // translate([0,0,wall_height-hole_height]) {
+                //     linear_extrude(hole_height) holes();
+                // }
                 
                 //render tabs
                 translate([0,0,wall_height]) {
@@ -258,9 +259,9 @@ module middle_layer() {
             walls();
             
             // inside screw pole
-            translate([0,0,middle_height-hole_height]) {
-                linear_extrude(hole_height) holes();
-            }
+            // translate([0,0,middle_height-hole_height]) {
+            //    linear_extrude(hole_height) holes();
+            //}
             
             // upper tabs
             translate([0,0,middle_height]) {
@@ -282,6 +283,11 @@ module middle_layer() {
 if (pattern == 1)
 {
     bottom_layer();
+    
+    //inside screw pole
+    translate([0,0,wall_height - hole_height]) {
+        linear_extrude(hole_height) holes();
+    }
 
     // add support into the outer screw hole (for FDM printers)
     scsupport_unit();
@@ -289,6 +295,20 @@ if (pattern == 1)
 
 else if (pattern == 2)
 {
+    bottom_layer();
+    
+    // add support into the outer screw hole (for FDM printers)
+    scsupport_unit();
+}
+
+else if (pattern == 3)
+{
     // translate ([0,100,0])
     middle_layer();
+    
+    //inside screw pole
+    translate([0,0,middle_height-hole_height]) {
+        linear_extrude(hole_height) holes();
+    }
+
 }
