@@ -1,22 +1,29 @@
+// M5stack simple bottom case forked from:
+// https://github.com/xoseperez/m5stack-rfm95/blob/master/enclosure/m5stack-rfm95.scad
+//
 
 // -------------------------------------------------
 // Configuration
 // -------------------------------------------------
 
-// thick of the base plate
+// switch the pattern what you make:
+// bottom case = 1, middle case = 2
+pattern = 1;
+
+// thick of the base plate (mm)
 base_height = 3;   
 
-// screw base height (over the base plate)
+// screw base height (over the base plate) (mm)
 screwbase_height = 3.5 ;
 
-// wall_height need to set over screwbase_height
+// wall_height (mm): need to set over screwbase_height
 wall_height = 10; 
 
-// height for the middle case
-middle_height = 12.5;
+// if you make middle case, please set this height.
+middle_height = 20;
 
 // -------------------------------------------------
-// Definition
+// Definition of size
 // -------------------------------------------------
 outer_size = 54.0;
 outer_corner = 5.0;
@@ -38,7 +45,7 @@ inner_corner_diameter = outer_corner - wall_width;
 $fn = 50;
 
 // -------------------------------------------------
-// Modules
+// Function
 // -------------------------------------------------
 
 // wall module (function)
@@ -60,6 +67,10 @@ module wall(outer, width, corner) {
         }
     }
 }
+
+// -------------------------------------------------
+// Modules
+// -------------------------------------------------
 
 // makeing wall with wall module
 module walls() {
@@ -184,7 +195,11 @@ module holes() {
     }
 }
 
-// build up bottom case
+// -------------------------------------------------
+// Build up
+// -------------------------------------------------
+
+// bottom case
 module bottom_layer() {
     
     // diff (whole body) - (outer screw)
@@ -229,7 +244,7 @@ module bottom_layer() {
 
 }
 
-// build up middle layer case
+// middle layer case
 module middle_layer() {
 
     // diff (middle layer case) - (lower tabs for connect)
@@ -261,14 +276,19 @@ module middle_layer() {
 }
 
 // -------------------------------------------------
-// Build up
+// Output object
 // -------------------------------------------------
 
-bottom_layer();
+if (pattern == 1)
+{
+    bottom_layer();
 
-// support for FDM printers
-scsupport_unit();
+    // add support into the outer screw hole (for FDM printers)
+    scsupport_unit();
+}
 
-
-// translate ([0,100,0])
-// middle_layer();
+else if (pattern == 2)
+{
+    // translate ([0,100,0])
+    middle_layer();
+}
